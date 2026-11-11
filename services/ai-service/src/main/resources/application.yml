@@ -1,0 +1,21 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: ai-service
+
+# Model provider wiring is added when a real LLM integration lands.
+ai:
+  provider: ${AI_PROVIDER:demo}
+  disclaimer: "Demo response — please independently verify legal information."
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.lexsupermus.ai: DEBUG

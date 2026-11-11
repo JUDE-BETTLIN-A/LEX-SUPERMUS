@@ -1,0 +1,177 @@
+# ============================================================================
+# LEX SUPERMUS — .gitignore
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Java / Maven
+# ----------------------------------------------------------------------------
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Gradle (if ever used)
+.gradle/
+build/
+
+# ----------------------------------------------------------------------------
+# Node.js / Next.js
+# ----------------------------------------------------------------------------
+node_modules/
+.next/
+out/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Package lock files (uncomment if you prefer one package manager)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Vercel
+.vercel/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# ----------------------------------------------------------------------------
+# IDE / Editor Files
+# ----------------------------------------------------------------------------
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# NetBeans
+nbproject/
+nbbuild/
+nbdist/
+nb-configuration.xml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ----------------------------------------------------------------------------
+# Environment Files
+# ----------------------------------------------------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keep .env.example tracked
+!.env.example
+
+# ----------------------------------------------------------------------------
+# Operating System Files
+# ----------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.nfs*
+
+# ----------------------------------------------------------------------------
+# Docker
+# ----------------------------------------------------------------------------
+docker-volumes/
+.docker/
+*.pid
+
+# Docker Compose override (local customizations)
+docker-compose.override.yml
+
+# ----------------------------------------------------------------------------
+# Logs
+# ----------------------------------------------------------------------------
+logs/
+*.log
+*.log.*
+spring.log
+
+# ----------------------------------------------------------------------------
+# Testing & Coverage
+# ----------------------------------------------------------------------------
+coverage/
+*.lcov
+.nyc_output/
+test-results/
+playwright-report/
+
+# JaCoCo
+jacoco.exec
+
+# ----------------------------------------------------------------------------
+# Miscellaneous
+# ----------------------------------------------------------------------------
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+
+# Secrets / credentials
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
