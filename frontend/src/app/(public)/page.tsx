@@ -20,7 +20,7 @@ export default function HomePage() {
             <Link href="/student" className="goldbtn">
               Explore Platform →
             </Link>
-            <Link href="/client" className="outlinebtn">
+            <Link href="/login" className="outlinebtn">
               Get Started
             </Link>
           </div>

@@ -20,3 +20,7 @@ input,select,textarea{width:100%;padding:12px;border:1px solid #d9dce2;border-ra
 a.navbtn,a.goldbtn,a.outlinebtn,a.brand,a.card,a.link{text-decoration:none;color:inherit}
 a.goldbtn,a.outlinebtn{display:inline-block}
 a.card{display:block}
+
+/* --- JUDE-BETTLIN branch: /login auth page --- */
+.authtab{background:#eef1f6;color:var(--ink);border-radius:9px;padding:10px 18px;font-weight:700}
+.authtab.active{background:var(--navy);color:#fff}
