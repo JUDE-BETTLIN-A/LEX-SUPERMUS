@@ -29,7 +29,9 @@ export default function SiteHeader() {
           <Link
             key={item.page}
             href={item.href}
-            className={`navbtn${isActive(item.href) ? " active" : ""}`}
+            className={`navbtn${item.highlight ? " authnav" : ""}${
+              isActive(item.href) ? " active" : ""
+            }`}
             data-page={item.page}
           >
             {item.label}

@@ -3,6 +3,8 @@ export type NavItem = {
   page: string;
   label: string;
   href: string;
+  /** Rendered with a gold highlight (Login Register) */
+  highlight?: boolean;
 };
 
 /**
@@ -10,15 +12,13 @@ export type NavItem = {
  * `href` replaces the old `go(page)` JavaScript page switcher.
  *
  * JUDE-BETTLIN branch: Student/Advocate/Client/Admin entries removed from the
- * top nav. Users reach their portal by signing in / signing up at /login
- * (role-based redirect). The portal routes still exist but are reached
- * through authentication and links, not the header.
+ * top nav. The Login Register entry is highlighted in gold.
  */
 export const NAV_ITEMS: NavItem[] = [
   { page: "home", label: "Home", href: "/" },
   { page: "library", label: "Legal Library", href: "/library" },
   { page: "ai", label: "AI Solutions", href: "/ai" },
-  { page: "auth", label: "Login / Sign Up", href: "/login" },
+  { page: "auth", label: "Login Register", href: "/login", highlight: true },
 ];
 
 /** Portal route for each authentiatable role (used after sign in / sign up). */
