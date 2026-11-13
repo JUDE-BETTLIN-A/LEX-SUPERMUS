@@ -60,18 +60,18 @@ The platform follows the **API-first** design principle. All service interfaces 
           ▼                    ▼                    ▼
 ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
 │  STUDENT SERVICE │ │ ADVOCATE SERVICE │ │  CLIENT SERVICE  │
-│     (Port 8081)  │ │   (Port 8082)   │ │   (Port 8083)    │
+│     (Port 8081)  │ │   (Port 8082)    │ │   (Port 8083)    │
 │                  │ │                  │ │                  │
-│ • User mgmt     │ │ • User mgmt     │ │ • User mgmt      │
-│ • Student       │ │ • Advocate       │ │ • Client         │
-│   profiles      │ │   profiles      │ │   profiles       │
-│ • Courses &     │ │ • Bar Council   │ │ • Consultations  │
-│   enrollment    │ │   verification  │ │ • Case requests  │
-│ • Moot courts   │ │ • Case mgmt    │ │ • Reviews        │
-│ • Internships   │ │ • Client        │ │ • Bookings       │
-│ • Resources     │ │   assignments   │ │                  │
-│                  │ │ • Documents     │ │                  │
-└────────┬─────────┘ └────────┬────────┘ └────────┬─────────┘
+│ • User mgmt      │ │ • User mgmt      │ │ • User mgmt      │
+│ • Student        │ │ • Advocate       │ │ • Client         │
+│   profiles       │ │   profiles       │ │   profiles       │
+│ • Courses &      │ │ • Bar Council    │ │ • Consultations  │
+│   enrollment     │ │  ID verification │ │ • Case requests  │
+│ • Moot courts    │ │ • Case mgmt      │ │ • Reviews        │
+│ • Internships    │ │ • Client         │ │ • Bookings       │
+│ • Resources      │ │   assignments    │ │                  │
+│                  │ │ • Documents      │ │                  │
+└────────┬─────────┘ └────────┬──────── ┘ └────────┬─────────┘
          │                    │                    │
          ▼                    ▼                    ▼
 ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
