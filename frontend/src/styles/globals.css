@@ -74,3 +74,35 @@ a.card{display:block}
 .liPuzzle .ico{width:38px;height:38px;border-radius:8px;background:#f2e7ce;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
 .liFooter a{color:#9b7739;font-weight:600;padding:4px 8px;display:inline-block;cursor:pointer}
 @media(max-width:1100px){.liGrid{grid-template-columns:1fr}}
+
+/* --- JUDE-BETTLIN branch: LinkedIn UI color theme (scoped to /feed) --- */
+.liTheme{background:#f4f2ee}
+.liTheme .liCard{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.liTheme .liCard b{color:#000000e6}
+.liTheme .liCover{background:linear-gradient(120deg,#004182,#0a66c2)}
+.liTheme .avatar,.liTheme .liAvatar{background:#0a66c2;color:#fff;border-color:#fff}
+.liTheme .liIconNav{border:1px solid rgba(0,0,0,.08);border-radius:8px;background:#fff}
+.liTheme .liIconNav button{color:#00000099}
+.liTheme .liIconNav button.active{color:#0a66c2;border-bottom:2px solid #0a66c2;font-weight:700}
+.liTheme .liBadge b{background:#cb112d}
+.liTheme .liLink{color:#0a66c2}
+.liTheme .liLink:hover{text-decoration:underline}
+.liTheme .liMore{color:#0a66c2;font-weight:600}
+.liTheme .liSort{color:#00000099}
+.liTheme .liSort select{background:#fff;border-color:#d0d5d9}
+.liTheme .pill{background:#e8f3fb;color:#0a66c2}
+.liTheme .notice{background:#eef3f8;border-left:4px solid #0a66c2;color:#0a66c2}
+.liTheme .liMedia{background:linear-gradient(120deg,#004182,#0a66c2);color:#fff}
+.liTheme .ghost{background:transparent;color:#00000099;font-weight:600}
+.liTheme .ghost:hover{background:#f4f2ee;border-radius:16px}
+.liTheme .primary{background:#0a66c2;color:#fff;border-radius:18px}
+.liTheme .primary:hover{background:#004182}
+.liTheme .goldbtn{background:#0a66c2;color:#fff}
+.liTheme .goldbtn:hover{background:#004182}
+.liTheme .composer{border-color:#d0d5d9 !important;background:#fff}
+.liTheme .composer input{color:#00000099}
+.liTheme .liMuted,.liTheme .postMeta{color:#00000099}
+.liTheme h1,.liTheme h3{color:#000000e6}
+.liTheme .liNewsItem b{color:#000000e6}
+.liTheme .liFooter a{color:#00000099;font-weight:600}
+.liTheme .liFooter b{color:#0a66c2}

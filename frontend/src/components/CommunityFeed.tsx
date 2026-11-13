@@ -170,7 +170,7 @@ export default function CommunityFeed() {
   };
 
   return (
-    <section id="feed" className="page">
+    <section id="feed" className="page liTheme">
       {/* Feed toolbar (LinkedIn icon-nav) */}
       <div className="liIconNav">
         {[
