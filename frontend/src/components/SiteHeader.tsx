@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { NAV_ITEMS } from "@/lib/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import ProfileAvatar from "@/components/ProfileAvatar";
+import { NAV_ITEMS } from "@/lib/navigation";
 
 type UserRole = "STUDENT" | "ADVOCATE" | "CLIENT";
 
@@ -14,19 +15,10 @@ type SignedInProfile = {
   completion: number;
 };
 
-/**
- * Site header — ported from the prototype's `<header>` + `<nav id="topnav">`.
-<<<<<<< Updated upstream
- * The `go(page)` function is replaced by Next.js routing; the active state
- * comes from the current pathname instead of `data-page` toggling.
- */
-export default function SiteHeader() {
-  const pathname = usePathname();
-=======
- *
- * The public navigation remains available. Signed-in users see their completed
- * profile avatar; clients use their separate portal.
- */
+function isUserRole(role: string): role is UserRole {
+  return role === "STUDENT" || role === "ADVOCATE" || role === "CLIENT";
+}
+
 export default function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
@@ -39,17 +31,18 @@ export default function SiteHeader() {
 
   useEffect(() => {
     const syncProfile = () => {
-      const role = window.localStorage.getItem("lex-supermus-user-role") ?? "";
+      const savedRole = window.localStorage.getItem("lex-supermus-user-role") ?? "";
       const completion = Number(
         window.localStorage.getItem("lex-supermus-profile-completion") ?? "0"
       );
       setProfile({
         name: window.localStorage.getItem("lex-supermus-user-name") ?? "",
-        role: role === "STUDENT" || role === "ADVOCATE" || role === "CLIENT" ? role : "",
+        role: isUserRole(savedRole) ? savedRole : "",
         avatar: window.localStorage.getItem("lex-supermus-user-avatar") ?? "",
         completion: Number.isFinite(completion) ? completion : 0,
       });
     };
+
     syncProfile();
     window.addEventListener("lex-auth-updated", syncProfile);
     window.addEventListener("storage", syncProfile);
@@ -58,14 +51,9 @@ export default function SiteHeader() {
       window.removeEventListener("storage", syncProfile);
     };
   }, []);
->>>>>>> Stashed changes
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
-
-<<<<<<< Updated upstream
-=======
-  const isLoginActive = pathname.startsWith("/login");
   const profileHref = profile.role === "CLIENT"
     ? "/client"
     : profile.role === "STUDENT"
@@ -83,11 +71,10 @@ export default function SiteHeader() {
     router.push("/");
   }
 
->>>>>>> Stashed changes
   return (
     <header>
       <Link href="/" className="brand" style={{ textDecoration: "none" }}>
-        <span className="mark">⚙</span>
+        <span className="mark" aria-hidden="true">⚖</span>
         <div>
           <b>LEX SUPERMUS</b>
           <small>WHERE LAW MEETS INTELLIGENCE</small>
@@ -104,8 +91,6 @@ export default function SiteHeader() {
             {item.label}
           </Link>
         ))}
-<<<<<<< Updated upstream
-=======
 
         {profile.name && profile.role ? (
           <>
@@ -129,7 +114,7 @@ export default function SiteHeader() {
         ) : (
           <Link
             href="/login"
-            className={`navbtn nav-login-btn${isLoginActive ? " nav-login-btn--active" : ""}`}
+            className={`navbtn nav-login-btn${pathname.startsWith("/login") ? " nav-login-btn--active" : ""}`}
             data-page="login"
             title="Student and advocate sign in or register"
           >
@@ -137,7 +122,6 @@ export default function SiteHeader() {
             <span className="nav-login-label">Login</span>
           </Link>
         )}
->>>>>>> Stashed changes
       </nav>
     </header>
   );
