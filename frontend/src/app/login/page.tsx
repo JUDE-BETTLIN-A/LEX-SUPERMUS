@@ -5,11 +5,7 @@ export const metadata: Metadata = {
   title: "Login / Sign Up | LEX SUPERMUS",
 };
 
-/**
-
- * Replaces the old Admin nav entry: Student, Advocate and Client users
- * sign in or create an account here, then land in their own portal.
- */
+/** Student and Advocate sign in or create a professional account here. */
 export default function LoginPage() {
   return (
     <section id="login" className="page">

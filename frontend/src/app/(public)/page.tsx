@@ -1,28 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useProfessionalSession } from "@/components/ProfessionalSession";
 
 /**
  * Landing page — ported from the prototype's `<section id="home">`.
  * `go(page)` calls become Next.js `<Link>` navigation.
  */
 export default function HomePage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const syncAuthentication = () => {
-      setIsAuthenticated(Boolean(window.localStorage.getItem("lex-supermus-user-name")));
-    };
-
-    syncAuthentication();
-    window.addEventListener("lex-auth-updated", syncAuthentication);
-    window.addEventListener("storage", syncAuthentication);
-    return () => {
-      window.removeEventListener("lex-auth-updated", syncAuthentication);
-      window.removeEventListener("storage", syncAuthentication);
-    };
-  }, []);
+  const { profile } = useProfessionalSession();
 
   return (
     <section id="home" className="page">
@@ -36,12 +22,12 @@ export default function HomePage() {
           </h1>
           <p>Your Legal Career. Your Legal Practice. Your Legal Knowledge.</p>
           <div className="actions">
-            {isAuthenticated && (
+            {profile && (
               <Link href="/feed" className="goldbtn">
                 Explore Platform →
               </Link>
             )}
-            {!isAuthenticated && (
+            {!profile && (
               <Link href="/login" className="outlinebtn">
                 Get Started
               </Link>
@@ -50,44 +36,56 @@ export default function HomePage() {
         </div>
       </div>
 
-      <h2 className="sectionTitle">OUR ECOSYSTEM</h2>
-
-      <div className="cards">
-        <Link href="/client" className="card portal">
-          <div className="ico">👥</div>
-          <h3>Clients</h3>
-          <p>Find trusted legal support</p>
-          <span className="link">Get legal help →</span>
-        </Link>
-        <Link href="/library" className="card portal">
-          <div className="ico">📚</div>
-          <h3>Legal Library</h3>
-          <p>Explore legal knowledge</p>
-          <span className="link">Browse resources →</span>
-        </Link>
-      </div>
-
-      <div className="featureGrid">
-        <div className="card feature">
-          <div className="ico">🧠</div>
-          <div>
-            <h3>AI Legal Intelligence</h3>
-            <p>Ask. Learn. Research. Advance.</p>
-            <Link href="/ai" className="goldbtn">
-              Try AI →
-            </Link>
-          </div>
-        </div>
-        <div className="card">
-          <h3>Why LEX SUPERMUS?</h3>
-          <p>
-            ✓ Trusted legal knowledge
-            <br />✓ AI-assisted research
-            <br />✓ Professional ecosystem
-            <br />✓ Privacy-conscious design
+      <section className="ecosystem-section" aria-labelledby="ecosystem-title">
+        <div className="sectionHeading">
+          <p className="sectionKicker">One connected legal community</p>
+          <h2 className="sectionTitle" id="ecosystem-title">
+            Explore LEX SUPERMUS
+          </h2>
+          <p className="ecosystemIntro">
+            Client support, trusted legal knowledge, and AI tools in one place.
           </p>
         </div>
-      </div>
+
+        <div className="cards">
+          <Link href="/client/access" className="card portal">
+            <div className="ico">👥</div>
+            <h3>Client Portal</h3>
+            <p>Sign in or create an account to organise legal support.</p>
+            <span className="link">Continue to client access →</span>
+          </Link>
+          <Link href="/library" className="card portal">
+            <div className="ico">📚</div>
+            <h3>Legal Library</h3>
+            <p>Explore legal knowledge</p>
+            <span className="link">Browse resources →</span>
+          </Link>
+          <Link href="/ai" className="card portal">
+            <div className="ico">🧠</div>
+            <h3>AI Legal Intelligence</h3>
+            <p>Organise questions and explore legal topics.</p>
+            <span className="link">Explore AI tools →</span>
+          </Link>
+        </div>
+      </section>
+
+      <section className="platform-section" aria-labelledby="platform-title">
+        <div className="sectionHeading">
+          <p className="sectionKicker">Designed for clarity and trust</p>
+          <h2 className="sectionTitle" id="platform-title">
+            A clearer way to get started
+          </h2>
+        </div>
+        <div className="card ecosystem-benefits">
+          <h3>Built around your legal journey</h3>
+          <ul>
+            <li>Clear client sign-in and account creation</li>
+            <li>Consultation preferences in one place</li>
+            <li>Legal resources alongside your support tools</li>
+            <li>Privacy-first demo: no details are saved or sent</li>
+          </ul>
+        </div>
+      </section>
     </section>
   );
 }
