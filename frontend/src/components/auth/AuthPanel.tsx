@@ -1,434 +1,530 @@
 "use client";
 
-/**
- * AuthPanel – sign-in and three-step registration panel for LEX SUPERMUS.
- *
- * STEP 1  →  Credentials  (Sign In / Create Account)
- *            • Email + Password (+ name & confirm on register)
- *
- * STEP 2  →  Domain chooser  (registration only)
- * STEP 3  →  Required role-specific profile details
- *
- * No real authentication — UI prototype.
- * Wire handleCredentials() to the real auth API when backend is ready.
- * Sign-in and completed registration lead to the professional feed.
- */
-
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { UserRole } from "@/types";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
+import ProfileProgressAvatar from "@/components/ProfileProgressAvatar";
+import {
+  useProfessionalSession,
+  type ProfessionalRole,
+} from "@/components/ProfessionalSession";
 
-/* ─── Types ──────────────────────────────────────────────────────────────── */
-
-type RoleKey = Extract<UserRole, "STUDENT" | "ADVOCATE" | "CLIENT">;
 type AuthMode = "login" | "register";
-type Step = "credentials" | "domain" | "profile";
+type AuthStep = "credentials" | "profile";
 
-/* ─── Domain metadata ────────────────────────────────────────────────────── */
+function getProfileCompletion(form: HTMLFormElement, role: ProfessionalRole) {
+  const formData = new FormData(form);
+  const fields =
+    role === "STUDENT"
+      ? [
+          "fullName",
+          "phone",
+          "lawSchool",
+          "degree",
+          "studyYear",
+          "graduationYear",
+          "city",
+          "legalInterests",
+          "profilePhoto",
+        ]
+      : [
+          "fullName",
+          "phone",
+          "stateBarCouncil",
+          "enrolmentNumber",
+          "yearsExperience",
+          "practiceAreas",
+          "city",
+          "profilePhoto",
+        ];
+  const completed = fields.filter((field) => {
+    const value = formData.get(field);
+    if (value instanceof File) {
+      return value.size > 0 && value.type.startsWith("image/");
+    }
+    return typeof value === "string" && value.trim().length > 0;
+  }).length;
 
-interface DomainMeta {
-  label: string;
-  icon: string;
-  tagline: string;
-  accentColor: string;
-  bgColor: string;
-  extras: { label: string; placeholder: string; type?: string; options?: string[] }[];
+  return Math.round((completed / fields.length) * 100);
 }
-
-const DOMAINS: Record<RoleKey, DomainMeta> = {
-  STUDENT: {
-    label: "Student",
-    icon: "🎓",
-    tagline: "Build your legal career",
-    accentColor: "#2c9a66",
-    bgColor: "#edfaf4",
-    extras: [
-      { label: "Law School / University", placeholder: "e.g. National Law School, Bangalore" },
-      {
-        label: "Year of Study",
-        placeholder: "Select year",
-        type: "select",
-        options: ["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year"],
-      },
-    ],
-  },
-  ADVOCATE: {
-    label: "Advocate",
-    icon: "⚖️",
-    tagline: "Manage your practice",
-    accentColor: "#c2a66b",
-    bgColor: "#fdf8ef",
-    extras: [
-      {
-        label: "State Bar Council",
-        placeholder: "Select council",
-        type: "select",
-        options: [
-          "Bar Council of Tamil Nadu and Puducherry",
-          "Bar Council of Delhi",
-          "Bar Council of Maharashtra and Goa",
-          "Other State Bar Council",
-        ],
-      },
-      { label: "Enrolment Number", placeholder: "e.g. TN/1234/2020" },
-    ],
-  },
-  CLIENT: {
-    label: "Client",
-    icon: "👤",
-    tagline: "Find legal support",
-    accentColor: "#14243a",
-    bgColor: "#eef1f6",
-    extras: [
-      { label: "Phone Number", placeholder: "+91 98765 43210", type: "tel" },
-      { label: "City", placeholder: "e.g. Chennai" },
-    ],
-  },
-};
-
-const DOMAIN_ORDER: RoleKey[] = ["STUDENT", "ADVOCATE", "CLIENT"];
-
-/* ─── Component ─────────────────────────────────────────────────────────── */
 
 export default function AuthPanel() {
   const router = useRouter();
-
-  const [step, setStep]       = useState<Step>("credentials");
-  const [mode, setMode]       = useState<AuthMode>("login");
-  const [loading, setLoading] = useState(false);
-  const [domainLoading, setDomainLoading] = useState<RoleKey | null>(null);
-  const [selectedRole, setSelectedRole] = useState<RoleKey | null>(null);
+  const { profile, completeProfile } = useProfessionalSession();
+  const [mode, setMode] = useState<AuthMode>("login");
+  const [step, setStep] = useState<AuthStep>("credentials");
+  const [role, setRole] = useState<ProfessionalRole>("STUDENT");
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [profileProgress, setProfileProgress] = useState(0);
-  const [error, setError]     = useState("");
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [error, setError] = useState("");
+  const profileFormRef = useRef<HTMLFormElement>(null);
 
-  /* ── Step 1: Credentials ───────────────────────────────────────────────── */
+  useEffect(() => {
+    if (profile) router.replace("/feed");
+  }, [profile, router]);
 
-  async function handleCredentials(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  useEffect(() => {
+    const preview = photoPreview;
+    return () => {
+      if (preview.startsWith("blob:")) URL.revokeObjectURL(preview);
+    };
+  }, [photoPreview]);
+
+  useEffect(() => {
+    if (step === "profile" && profileFormRef.current) {
+      setProfileProgress(getProfileCompletion(profileFormRef.current, role));
+    }
+  }, [role, step]);
+
+  function changeMode(nextMode: AuthMode) {
+    setMode(nextMode);
+    setStep("credentials");
+    setEmail("");
+    setFullName("");
+    setProfileProgress(0);
+    setPhotoPreview("");
     setError("");
-    setLoading(true);
-    const formData = new FormData(e.currentTarget);
-    const email = String(formData.get("email") ?? "").trim();
-    const enteredName = String(formData.get("name") ?? "").trim();
-    const password = String(formData.get("password") ?? "");
-    const confirmPassword = String(formData.get("confirmPassword") ?? "");
-    if (mode === "register" && password !== confirmPassword) {
-      setError("Passwords do not match.");
-      setLoading(false);
+  }
+
+  function handleCredentialsSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const submittedEmail = String(formData.get("email") ?? "").trim();
+
+    if (mode === "register") {
+      const password = String(formData.get("password") ?? "");
+      const confirmPassword = String(formData.get("confirmPassword") ?? "");
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
+    }
+
+    setEmail(submittedEmail);
+    setFullName("");
+    setProfileProgress(0);
+    form.reset();
+    setStep("profile");
+  }
+
+  function handleProfileChange(event: ChangeEvent<HTMLFormElement>) {
+    setProfileProgress(getProfileCompletion(event.currentTarget, role));
+    const target = event.target;
+    if (
+      target instanceof HTMLInputElement &&
+      target.name === "profilePhoto" &&
+      target.files?.[0]
+    ) {
+      setPhotoPreview(URL.createObjectURL(target.files[0]));
+    }
+  }
+
+  function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const completion = getProfileCompletion(form, role);
+    const photo = formData.get("profilePhoto");
+    const submittedName = String(formData.get("fullName") ?? "").trim();
+
+    setProfileProgress(completion);
+    if (completion !== 100) {
+      setError("Complete every required field and add a profile photo.");
+      return;
+    }
+    if (!(photo instanceof File) || !photo.type.startsWith("image/")) {
+      setError("Choose a valid image for your profile photo.");
       return;
     }
 
-    const displayName = mode === "register" && enteredName
-      ? enteredName
-      : (email.split("@")[0] || "Member")
-          .replace(/[._-]+/g, " ")
-          .replace(/\b\w/g, (letter) => letter.toUpperCase());
-    try {
-      /* TODO: replace with real API call
-       *   await postJson("/api/auth/login", { email, password });
-       *   OR  await postJson("/api/auth/register", { name, email, password });
-       */
-      await new Promise((r) => setTimeout(r, 700)); // simulate network
-      window.localStorage.setItem("lex-supermus-user-name", displayName);
-      window.dispatchEvent(new Event("lex-auth-updated"));
-      if (mode === "login") {
-        router.push("/feed");
-      } else {
-        setStep("domain");
-      }
-    } catch {
-      setError("Invalid credentials. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    setError("");
+    completeProfile({
+      role,
+      fullName: submittedName,
+      email,
+      completion,
+      avatar: photo,
+    });
+    form.reset();
+    router.replace("/feed");
   }
 
-  /* ── Step 2: Domain selection ──────────────────────────────────────────── */
-
-  async function handleDomainSelect(role: RoleKey) {
-    setDomainLoading(role);
-    try {
-      /* TODO: attach role to the authenticated session, e.g.:
-       *   await postJson("/api/auth/set-role", { role });
-       */
-      await new Promise((r) => setTimeout(r, 500));
-      setSelectedRole(role);
-      setProfileProgress(0);
-      setStep("profile");
-    } finally {
-      setDomainLoading(null);
-    }
-  }
-
-  function updateProfileProgress(event: ChangeEvent<HTMLFormElement>) {
-    if (!selectedRole) return;
-    const formData = new FormData(event.currentTarget);
-    const fields = DOMAINS[selectedRole].extras;
-    const completedFields = fields.filter((field) =>
-       String(formData.get(field.label) ?? "").trim()
-    ).length;
-    setProfileProgress(Math.round((completedFields / fields.length) * 100));
-  }
-
-  function handleProfileCompletion(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    window.dispatchEvent(new Event("lex-auth-updated"));
-    router.push("/feed");
-  }
-
-  /* ── Render ────────────────────────────────────────────────────────────── */
+  if (profile) return null;
 
   return (
     <div className="auth-page">
-
-      {/* ── Branding ── */}
       <div className="auth-brand">
-        <span className="auth-brand-mark">⚖</span>
+        <span className="auth-brand-mark" aria-hidden="true">
+          ⚖
+        </span>
         <div>
           <strong>LEX SUPERMUS</strong>
-          <small>WHERE LAW MEETS INTELLIGENCE</small>
+          <small>STUDENT &amp; ADVOCATE ACCESS</small>
         </div>
       </div>
 
-      {mode === "register" && (
-        <div className="auth-steps">
-          <div className={`auth-step-dot${step === "credentials" ? " auth-step-dot--active" : " auth-step-dot--done"}`}>
-            {step === "credentials" ? "1" : "✓"}
-          </div>
-          <div className={`auth-step-line${step !== "credentials" ? " auth-step-line--done" : ""}`} />
-          <div className={`auth-step-dot${step === "domain" ? " auth-step-dot--active" : step === "profile" ? " auth-step-dot--done" : ""}`}>
-            {step === "profile" ? "✓" : "2"}
-          </div>
-          <div className={`auth-step-line${step === "profile" ? " auth-step-line--done" : ""}`} />
-          <div className={`auth-step-dot${step === "profile" ? " auth-step-dot--active" : ""}`}>3</div>
-          <span className="auth-step-label" style={{ marginLeft: 8 }}>
-            {step === "credentials"
-              ? "Enter your credentials"
-              : step === "domain"
-                ? "Choose your domain"
-                : "Complete your profile"}
-          </span>
+      <div className="auth-card professional-auth-card">
+        <div className="auth-mode-row" role="group" aria-label="Account action">
+          <button
+            type="button"
+            aria-pressed={mode === "login"}
+            className={`auth-mode-btn${mode === "login" ? " auth-mode-btn--active" : ""}`}
+            onClick={() => changeMode("login")}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "register"}
+            className={`auth-mode-btn${mode === "register" ? " auth-mode-btn--active" : ""}`}
+            onClick={() => changeMode("register")}
+          >
+            Create Account
+          </button>
         </div>
-      )}
 
-      {/* ════════════════════════════════════════
-          STEP 1 — CREDENTIALS CARD
-         ════════════════════════════════════════ */}
-      {step === "credentials" && (
-        <div className="auth-card">
+        <div className="auth-heading">
+          <h2>
+            {step === "credentials"
+              ? mode === "login"
+                ? "Welcome back"
+                : "Create a professional account"
+              : `Complete your ${role === "STUDENT" ? "student" : "advocate"} profile`}
+          </h2>
+          <p className="auth-sub">
+            {step === "credentials"
+              ? "Choose your professional role to continue."
+              : "Complete the required details to finish your profile."}
+          </p>
+        </div>
 
-          {/* Mode toggle */}
-          <div className="auth-mode-row">
-            <button
-              className={`auth-mode-btn${mode === "login" ? " auth-mode-btn--active" : ""}`}
-              onClick={() => { setMode("login"); setError(""); }}
-            >
-              Sign In
-            </button>
-            <button
-              className={`auth-mode-btn${mode === "register" ? " auth-mode-btn--active" : ""}`}
-              onClick={() => { setMode("register"); setError(""); }}
-            >
-              Create Account
-            </button>
-          </div>
+        {step === "credentials" ? (
+          <form className="auth-form" onSubmit={handleCredentialsSubmit}>
+            <div className="auth-role-selector" aria-label="Choose a role">
+              <button
+                type="button"
+                aria-pressed={role === "STUDENT"}
+                className={`auth-role-button${role === "STUDENT" ? " active" : ""}`}
+                onClick={() => setRole("STUDENT")}
+              >
+                Student
+              </button>
+              <button
+                type="button"
+                aria-pressed={role === "ADVOCATE"}
+                className={`auth-role-button${role === "ADVOCATE" ? " active" : ""}`}
+                onClick={() => setRole("ADVOCATE")}
+              >
+                Advocate
+              </button>
+            </div>
 
-          {/* Heading */}
-          <div className="auth-heading">
-            <h2>{mode === "login" ? "Welcome back" : "Create your account"}</h2>
-            <p className="auth-sub">
-              {mode === "login"
-                ? "Sign in to enter your professional feed."
-                : "Create your account, choose a role, and complete your profile."}
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleCredentials} className="auth-form">
-
-            {mode === "register" && (
-              <>
-                <label htmlFor="auth-name">Full Name</label>
-                <input id="auth-name" name="name" required placeholder="Your full legal name" />
-              </>
-            )}
-
-            <label htmlFor="auth-email">Email Address</label>
-            <input id="auth-email" name="email" type="email" required placeholder="you@example.com" />
-
-            <label htmlFor="auth-password">Password</label>
+            <label htmlFor="professional-email">Email address</label>
             <input
-              id="auth-password"
+              id="professional-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="you@example.com"
+            />
+            <label htmlFor="professional-password">Password</label>
+            <input
+              id="professional-password"
               name="password"
               type="password"
+              autoComplete={mode === "register" ? "new-password" : "current-password"}
+              minLength={8}
               required
-              placeholder={mode === "register" ? "Create a strong password" : "Enter your password"}
+              placeholder={mode === "register" ? "At least 8 characters" : "Enter your password"}
             />
-
             {mode === "register" && (
               <>
-                <label htmlFor="auth-confirm">Confirm Password</label>
-                <input id="auth-confirm" name="confirmPassword" type="password" required placeholder="Re-enter your password" />
+                <label htmlFor="professional-confirm-password">Confirm password</label>
+                <input
+                  id="professional-confirm-password"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  placeholder="Re-enter your password"
+                />
               </>
             )}
 
-            {error && <div className="auth-error">{error}</div>}
-
-            {mode === "login" && (
-              <div className="auth-forgot">
-                <button
-                  type="button"
-                  className="auth-link-btn"
-                  onClick={() => window.alert("Demo: password-reset email would be sent.")}
-                >
-                  Forgot password?
-                </button>
+            {error && (
+              <div className="auth-error" role="alert">
+                {error}
               </div>
             )}
 
-            <button type="submit" className="auth-submit auth-submit--navy" disabled={loading}>
-              {loading ? "Please wait…" : mode === "login" ? "Sign In →" : "Register →"}
+            <button type="submit" className="auth-submit auth-submit--navy">
+              {mode === "login" ? "Continue to profile" : "Create account"}
             </button>
-
             <p className="auth-disclaimer">
-              {mode === "login"
-                ? "Demo mode — no real credentials are verified."
-                : "Demo mode — no data is stored or transmitted."}
+              Demo only — credentials are not verified or saved. The next step
+              collects role-specific profile details in this browser only.
             </p>
           </form>
-
-          {/* Switch mode footer */}
-          <div className="auth-switch">
-            {mode === "login" ? (
-              <>Don&apos;t have an account?{" "}
-                <button className="auth-link-btn" onClick={() => setMode("register")}>Register here</button>
-              </>
-            ) : (
-              <>Already have an account?{" "}
-                <button className="auth-link-btn" onClick={() => setMode("login")}>Sign in</button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ════════════════════════════════════════
-          STEP 2 — DOMAIN CHOOSER
-         ════════════════════════════════════════ */}
-      {step === "domain" && (
-        <div className="auth-domain-wrap">
-          <div className="auth-heading" style={{ textAlign: "center", marginBottom: 24 }}>
-            <h2>Choose your domain</h2>
-            <p className="auth-sub">
-              Select the role that best describes you.
-              {mode === "register" && " Complete your role-specific profile in the next step."}
-            </p>
-          </div>
-
-          <div className="auth-domain-grid">
-            {DOMAIN_ORDER.map((role) => {
-              const d = DOMAINS[role];
-              const isLoading = domainLoading === role;
-              return (
-                <button
-                  key={role}
-                  className={`auth-domain-card${isLoading ? " auth-domain-card--loading" : ""}`}
-                  style={{ "--domain-accent": d.accentColor, "--domain-bg": d.bgColor } as React.CSSProperties}
-                  onClick={() => handleDomainSelect(role)}
-                  disabled={domainLoading !== null}
-                >
-                  <span className="auth-domain-icon">{d.icon}</span>
-                  <span className="auth-domain-label">{d.label}</span>
-                  <span className="auth-domain-tagline">{d.tagline}</span>
-
-                  {/* Register: show key extra fields as preview pills */}
-                  {mode === "register" && (
-                    <ul className="auth-domain-fields">
-                      {d.extras.map((ex) => (
-                        <li key={ex.label}>{ex.label}</li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <span className="auth-domain-cta">
-                    {isLoading ? "Opening…" : `Enter as ${d.label} →`}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Back link */}
-          <div style={{ textAlign: "center", marginTop: 20 }}>
-            <button
-              className="auth-link-btn"
-              onClick={() => { setStep("credentials"); setError(""); }}
-            >
-              ← Back to credentials
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === "profile" && selectedRole && (
-        <div className="auth-card">
-          <div className="auth-heading">
-            <h2>Complete your {DOMAINS[selectedRole].label.toLowerCase()} profile</h2>
-            <p className="auth-sub">Fill in all required details to complete registration.</p>
-          </div>
-
-          <div className="progress" aria-label={`Profile ${profileProgress}% complete`}>
-            <span style={{ width: `${profileProgress}%` }} />
-          </div>
-          <p className="auth-sub" aria-live="polite">{profileProgress}% complete</p>
-
+        ) : (
           <form
+            ref={profileFormRef}
             className="auth-form"
-            onChange={updateProfileProgress}
-            onSubmit={handleProfileCompletion}
+            onChange={handleProfileChange}
+            onSubmit={handleProfileSubmit}
           >
-            {DOMAINS[selectedRole].extras.map((field) => (
-              <div key={field.label}>
-                <label htmlFor={`profile-${selectedRole}-${field.label}`}>{field.label}</label>
-                {field.type === "select" ? (
-                  <select
-                    id={`profile-${selectedRole}-${field.label}`}
-                    name={field.label}
-                    defaultValue=""
-                    required
-                  >
-                    <option value="" disabled>{field.placeholder}</option>
-                    {field.options?.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    id={`profile-${selectedRole}-${field.label}`}
-                    name={field.label}
-                    type={field.type ?? "text"}
-                    placeholder={field.placeholder}
-                    required
-                  />
-                )}
+            <div className="profile-setup-progress">
+              <ProfileProgressAvatar
+                fullName={fullName || email.split("@")[0]}
+                imageUrl={photoPreview}
+                completion={profileProgress}
+                size={88}
+              />
+              <div>
+                <strong>{profileProgress}% complete</strong>
+                <p>Add every required detail and a photo to complete your profile.</p>
               </div>
-            ))}
+            </div>
 
-            <button type="submit" className="auth-submit auth-submit--navy" disabled={profileProgress < 100}>
-              Complete registration →
-            </button>
-          </form>
+            <div className="professional-profile-grid">
+              <div>
+                <label htmlFor="professional-full-name">Full name</label>
+                <input
+                  id="professional-full-name"
+                  name="fullName"
+                  autoComplete="name"
+                  value={fullName}
+                  onChange={(event) => setFullName(event.target.value)}
+                  required
+                  placeholder="Your full name"
+                />
+              </div>
+              <div>
+                <label htmlFor="professional-profile-email">Email address</label>
+                <input
+                  id="professional-profile-email"
+                  name="email"
+                  type="email"
+                  value={email}
+                  readOnly
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="professional-phone">Phone number</label>
+                <input
+                  id="professional-phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  placeholder="Your phone number"
+                />
+              </div>
+              <div>
+                <label htmlFor="professional-city">City</label>
+                <input
+                  id="professional-city"
+                  name="city"
+                  autoComplete="address-level2"
+                  required
+                  placeholder="Your city"
+                />
+              </div>
 
-          <div style={{ textAlign: "center", marginTop: 20 }}>
+              {role === "STUDENT" ? (
+                <>
+                  <div>
+                    <label htmlFor="student-law-school">Law school / university</label>
+                    <input
+                      id="student-law-school"
+                      name="lawSchool"
+                      required
+                      placeholder="Institution name"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="student-degree">Degree / course</label>
+                    <input
+                      id="student-degree"
+                      name="degree"
+                      required
+                      placeholder="e.g. BA LL.B. or LL.B."
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="student-study-year">Year of study</label>
+                    <select id="student-study-year" name="studyYear" defaultValue="" required>
+                      <option value="" disabled>Select year</option>
+                      <option>1st year</option>
+                      <option>2nd year</option>
+                      <option>3rd year</option>
+                      <option>4th year</option>
+                      <option>5th year</option>
+                      <option>Graduated</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="student-graduation-year">Expected graduation year</label>
+                    <input
+                      id="student-graduation-year"
+                      name="graduationYear"
+                      type="number"
+                      min="2000"
+                      max="2100"
+                      required
+                      placeholder="e.g. 2028"
+                    />
+                  </div>
+                  <div className="professional-profile-field--full">
+                    <label htmlFor="student-interests">Legal interests</label>
+                    <input
+                      id="student-interests"
+                      name="legalInterests"
+                      required
+                      placeholder="e.g. constitutional law, legal research"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label htmlFor="advocate-bar-council">State Bar Council</label>
+                    <select
+                      id="advocate-bar-council"
+                      name="stateBarCouncil"
+                      defaultValue=""
+                      required
+                    >
+                      <option value="" disabled>Select council</option>
+                      <option>Bar Council of Tamil Nadu and Puducherry</option>
+                      <option>Bar Council of Delhi</option>
+                      <option>Bar Council of Maharashtra and Goa</option>
+                      <option>Other State Bar Council</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="advocate-enrolment-number">Enrolment number</label>
+                    <input
+                      id="advocate-enrolment-number"
+                      name="enrolmentNumber"
+                      required
+                      placeholder="Your Bar Council enrolment number"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="advocate-years-experience">Years in practice</label>
+                    <input
+                      id="advocate-years-experience"
+                      name="yearsExperience"
+                      type="number"
+                      min="0"
+                      max="70"
+                      required
+                      placeholder="Years"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="advocate-practice-areas">Practice areas</label>
+                    <input
+                      id="advocate-practice-areas"
+                      name="practiceAreas"
+                      required
+                      placeholder="e.g. family law, civil litigation"
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="professional-profile-field--full">
+                <label htmlFor="professional-profile-photo">Profile photo</label>
+                <input
+                  id="professional-profile-photo"
+                  name="profilePhoto"
+                  type="file"
+                  accept="image/*"
+                  required
+                />
+                <small className="field-hint">
+                  Required to complete your profile. This demo keeps the image
+                  only in memory.
+                </small>
+              </div>
+            </div>
+
+            {error && (
+              <div className="auth-error" role="alert">
+                {error}
+              </div>
+            )}
+
             <button
-              className="auth-link-btn"
-              onClick={() => { setStep("domain"); setProfileProgress(0); }}
+              type="submit"
+              className="auth-submit auth-submit--navy"
+              disabled={profileProgress < 100}
             >
-              ← Back to domain selection
+              Finish profile and open professional feed
             </button>
-          </div>
+            <p className="auth-disclaimer">
+              Demo only — profile details are not saved or sent and will be
+              cleared when you leave or reload this page.
+            </p>
+          </form>
+        )}
+
+        <div className="auth-switch">
+          {step === "profile" ? (
+            <button
+              type="button"
+              className="auth-link-btn"
+              onClick={() => {
+                setStep("credentials");
+                setError("");
+              }}
+            >
+              ← Back to sign in
+            </button>
+          ) : mode === "login" ? (
+            <>
+              Need a new account?{" "}
+              <button
+                type="button"
+                className="auth-link-btn"
+                onClick={() => changeMode("register")}
+              >
+                Create account
+              </button>
+            </>
+          ) : (
+            <>
+              Already registered?{" "}
+              <button
+                type="button"
+                className="auth-link-btn"
+                onClick={() => changeMode("login")}
+              >
+                Sign in
+              </button>
+            </>
+          )}
+          {step === "credentials" && (
+            <p className="auth-client-link">
+              Client? <Link href="/client/access">Use the separate Client Portal</Link>
+            </p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -1,14 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import ProfileProgressAvatar from "@/components/ProfileProgressAvatar";
+import { useProfessionalSession } from "@/components/ProfessionalSession";
 
 const POSTS = [
   {
     name: "LEX SUPERMUS Legal Network",
     detail: "Legal community · 2h",
     initials: "LS",
-    text: "Welcome to a professional space for India’s legal community. Share insights, discover opportunities, and connect with students, advocates, and clients.",
+    text: "Welcome to a professional space for India’s legal community. Share insights, discover opportunities, and connect with students and advocates.",
     tags: ["#LegalCommunity", "#IndiaLaw"],
   },
   {
@@ -22,28 +25,15 @@ const POSTS = [
 
 export default function ProfessionalFeed() {
   const router = useRouter();
-  const [userName, setUserName] = useState("LEX SUPERMUS Member");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { profile } = useProfessionalSession();
   const [postText, setPostText] = useState("");
   const [postedText, setPostedText] = useState("");
 
   useEffect(() => {
-    const storedName = window.localStorage.getItem("lex-supermus-user-name");
-    if (!storedName) {
-      router.replace("/login");
-      return;
+    if (!profile) {
+      router.replace("/");
     }
-
-    setUserName(storedName);
-    setIsAuthenticated(true);
-  }, [router]);
-
-  const initials = userName
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join("");
+  }, [profile, router]);
 
   function publishPost() {
     const text = postText.trim();
@@ -52,7 +42,10 @@ export default function ProfessionalFeed() {
     setPostText("");
   }
 
-  if (!isAuthenticated) return null;
+  if (!profile) return null;
+  const portalPath = profile.role === "STUDENT" ? "/student" : "/advocate";
+  const portalLabel = profile.role === "STUDENT" ? "Student portal" : "Advocate portal";
+  const roleLabel = profile.role === "STUDENT" ? "Law student" : "Advocate";
 
   return (
     <div className="professional-feed">
@@ -65,25 +58,35 @@ export default function ProfessionalFeed() {
         <aside>
           <section className="liCard feed-profile-card">
             <div className="liCover" />
-            <div className="liAvatar feed-profile-avatar">{initials || "LS"}</div>
-            <h2>{userName}</h2>
-            <p className="liMuted">LEX SUPERMUS community member</p>
+            <div className="feed-profile-avatar">
+              <ProfileProgressAvatar
+                fullName={profile.fullName}
+                imageUrl={profile.avatarUrl}
+                completion={profile.completion}
+                size={76}
+              />
+            </div>
+            <h2>{profile.fullName}</h2>
+            <p className="liMuted">{roleLabel} · Profile {profile.completion}% complete</p>
             <div className="liDivider" />
             <div className="feed-profile-stat"><span>Profile views</span><b>24</b></div>
             <div className="feed-profile-stat"><span>Connections</span><b>18</b></div>
           </section>
           <section className="liCard">
             <h3>My professional space</h3>
-            <a className="feed-list-link" href="/student">Student opportunities</a>
-            <a className="feed-list-link" href="/advocate">Advocate services</a>
-            <a className="feed-list-link" href="/library">Legal library</a>
+            <Link className="feed-list-link" href={portalPath}>{portalLabel}</Link>
+            <Link className="feed-list-link" href="/library">Legal library</Link>
           </section>
         </aside>
 
         <section aria-label="Community feed">
           <div className="liCard">
             <div className="liRow">
-              <div className="liAvatar">{initials || "LS"}</div>
+              <ProfileProgressAvatar
+                fullName={profile.fullName}
+                imageUrl={profile.avatarUrl}
+                completion={profile.completion}
+              />
               <label className="feed-composer-label" htmlFor="feed-post">
                 Share a legal insight or update
               </label>
@@ -108,8 +111,12 @@ export default function ProfessionalFeed() {
           {postedText && (
             <article className="liCard">
               <div className="postHead">
-                <div className="liAvatar">{initials || "LS"}</div>
-                <div><b>{userName}</b><div className="postMeta">Community member · Just now</div></div>
+                <ProfileProgressAvatar
+                  fullName={profile.fullName}
+                  imageUrl={profile.avatarUrl}
+                  completion={profile.completion}
+                />
+                <div><b>{profile.fullName}</b><div className="postMeta">{roleLabel} · Just now</div></div>
               </div>
               <p>{postedText}</p>
               <div className="liActions"><span>♡ Like</span><span>↗ Share</span></div>
@@ -138,7 +145,7 @@ export default function ProfessionalFeed() {
           <section className="liCard">
             <h3>Explore LEX SUPERMUS</h3>
             <p className="liMuted">Your career, your practice, your legal knowledge — connected in one place.</p>
-            <a className="feed-list-link" href="/ai">Explore AI Legal Intelligence →</a>
+            <Link className="feed-list-link" href="/ai">Explore AI Legal Intelligence →</Link>
           </section>
         </aside>
       </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { ProfessionalSessionProvider } from "@/components/ProfessionalSession";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -17,11 +18,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SiteHeader />
-        <main>
-          {children}
-          <SiteFooter />
-        </main>
+        <ProfessionalSessionProvider>
+          <SiteHeader />
+          <main>
+            {children}
+            <SiteFooter />
+          </main>
+        </ProfessionalSessionProvider>
       </body>
     </html>
   );

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import PortalShell from "@/components/PortalShell";
+import ProfileProgressAvatar from "@/components/ProfileProgressAvatar";
+import { useProfessionalSession } from "@/components/ProfessionalSession";
 
 const TABS = [
   { key: "overview", label: "▦ Dashboard" },
@@ -19,11 +21,27 @@ const TABS = [
  */
 export default function AdvocatePortal() {
   const [tab, setTab] = useState("overview");
+  const { profile } = useProfessionalSession();
+  const completion = profile?.completion ?? 0;
 
   return (
     <PortalShell title="Advocate Portal" tabs={TABS} active={tab} onChange={setTab}>
       {tab === "overview" && (
         <>
+          {profile && (
+            <div className="portal-profile-summary">
+              <ProfileProgressAvatar
+                fullName={profile.fullName}
+                imageUrl={profile.avatarUrl}
+                completion={completion}
+                size={68}
+              />
+              <div>
+                <h2>{profile.fullName}</h2>
+                <p>{completion}% profile complete</p>
+              </div>
+            </div>
+          )}
           <h1>Advocate Dashboard</h1>
           <p className="sub">Professional workspace and verification overview.</p>
           <div className="notice">
@@ -32,7 +50,7 @@ export default function AdvocatePortal() {
           </div>
           <div className="stats">
             <div className="stat">
-              Profile status<b>In progress</b>
+              Profile status<b>{completion}% complete</b>
             </div>
             <div className="stat">
               Open matters<b>03</b>

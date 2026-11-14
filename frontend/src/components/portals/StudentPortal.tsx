@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import PortalShell from "@/components/PortalShell";
+import ProfileProgressAvatar from "@/components/ProfileProgressAvatar";
+import { useProfessionalSession } from "@/components/ProfessionalSession";
 
 const TABS = [
   { key: "overview", label: "▦ Dashboard" },
@@ -17,18 +19,34 @@ const TABS = [
  */
 export default function StudentPortal() {
   const [tab, setTab] = useState("overview");
+  const { profile } = useProfessionalSession();
+  const completion = profile?.completion ?? 0;
   const demoAlert = (msg: string) => window.alert(msg);
 
   return (
     <PortalShell title="Student Portal" tabs={TABS} active={tab} onChange={setTab}>
       {tab === "overview" && (
         <>
+          {profile && (
+            <div className="portal-profile-summary">
+              <ProfileProgressAvatar
+                fullName={profile.fullName}
+                imageUrl={profile.avatarUrl}
+                completion={completion}
+                size={68}
+              />
+              <div>
+                <h2>{profile.fullName}</h2>
+                <p>{completion}% profile complete</p>
+              </div>
+            </div>
+          )}
           <h1>Student Dashboard</h1>
           <p className="sub">Welcome back. Continue building your legal career.</p>
           <div className="item">
-            <b>Profile completion · 75%</b>
+            <b>Profile completion · {completion}%</b>
             <div className="progress">
-              <span />
+              <span style={{ width: `${completion}%` }} />
             </div>
           </div>
           <div className="stats">

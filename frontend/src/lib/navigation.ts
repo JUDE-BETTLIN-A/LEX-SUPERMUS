@@ -8,8 +8,8 @@ export type NavItem = {
 /**
  * Top navigation — ported from the prototype's `<nav id="topnav">`.
  *
- * Student / Advocate / Client / Admin are removed from the top bar.
- * Users reach their portal by signing in via /login (the single Login button).
+ * Role-specific entry points are rendered separately by SiteHeader.
+ * Professional users sign in via /login; clients use /client/access.
  * Home, Legal Library, and AI Solutions remain public nav links.
  */
 export const NAV_ITEMS: NavItem[] = [
