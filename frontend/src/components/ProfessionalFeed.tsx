@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const POSTS = [
   {
@@ -20,14 +21,22 @@ const POSTS = [
 ];
 
 export default function ProfessionalFeed() {
+  const router = useRouter();
   const [userName, setUserName] = useState("LEX SUPERMUS Member");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [postText, setPostText] = useState("");
   const [postedText, setPostedText] = useState("");
 
   useEffect(() => {
     const storedName = window.localStorage.getItem("lex-supermus-user-name");
-    if (storedName) setUserName(storedName);
-  }, []);
+    if (!storedName) {
+      router.replace("/login");
+      return;
+    }
+
+    setUserName(storedName);
+    setIsAuthenticated(true);
+  }, [router]);
 
   const initials = userName
     .split(/\s+/)
@@ -42,6 +51,8 @@ export default function ProfessionalFeed() {
     setPostedText(text);
     setPostText("");
   }
+
+  if (!isAuthenticated) return null;
 
   return (
     <div className="professional-feed">
