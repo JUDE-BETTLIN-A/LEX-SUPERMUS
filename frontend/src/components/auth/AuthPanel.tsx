@@ -111,12 +111,22 @@ export default function AuthPanel() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const email = String(formData.get("email") ?? "").trim();
+    const enteredName = String(formData.get("name") ?? "").trim();
+    const displayName = mode === "register" && enteredName
+      ? enteredName
+      : (email.split("@")[0] || "Member")
+          .replace(/[._-]+/g, " ")
+          .replace(/\b\w/g, (letter) => letter.toUpperCase());
     try {
       /* TODO: replace with real API call
        *   await postJson("/api/auth/login", { email, password });
        *   OR  await postJson("/api/auth/register", { name, email, password });
        */
       await new Promise((r) => setTimeout(r, 700)); // simulate network
+      window.localStorage.setItem("lex-supermus-user-name", displayName);
+      window.dispatchEvent(new Event("lex-auth-updated"));
       setStep("domain");                             // advance to role picker
     } catch {
       setError("Invalid credentials. Please try again.");
@@ -204,12 +214,12 @@ export default function AuthPanel() {
             {mode === "register" && (
               <>
                 <label htmlFor="auth-name">Full Name</label>
-                <input id="auth-name" required placeholder="Your full legal name" />
+                <input id="auth-name" name="name" required placeholder="Your full legal name" />
               </>
             )}
 
             <label htmlFor="auth-email">Email Address</label>
-            <input id="auth-email" type="email" required placeholder="you@example.com" />
+            <input id="auth-email" name="email" type="email" required placeholder="you@example.com" />
 
             <label htmlFor="auth-password">Password</label>
             <input

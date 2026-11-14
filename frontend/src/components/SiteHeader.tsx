@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { NAV_ITEMS } from "@/lib/navigation";
 
 /**
@@ -14,6 +15,16 @@ import { NAV_ITEMS } from "@/lib/navigation";
  */
 export default function SiteHeader() {
   const pathname = usePathname();
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const syncUserName = () => {
+      setUserName(window.localStorage.getItem("lex-supermus-user-name") ?? "");
+    };
+    syncUserName();
+    window.addEventListener("lex-auth-updated", syncUserName);
+    return () => window.removeEventListener("lex-auth-updated", syncUserName);
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -42,6 +53,8 @@ export default function SiteHeader() {
             {item.label}
           </Link>
         ))}
+
+        {userName && <span className="nav-user-greeting">Welcome, {userName}</span>}
 
         {/* Single unified Login entry — replaces Student / Advocate / Client */}
         <Link
