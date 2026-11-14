@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
-import AuthPanel from "@/components/auth/AuthPanel";
+import RegistrationLanding from "@/components/auth/RegistrationLanding";
 
 export const metadata: Metadata = {
-  title: "Login / Sign Up | LEX SUPERMUS",
+  title: "Join / Login | LEX SUPERMUS",
 };
 
 /**
  * Route: /login — JUDE-BETTLIN branch.
- * Replaces the old Admin nav entry: Student, Advocate and Client users
- * sign in or create an account here, then land in their own portal.
+ * Registration landing ("Join India's Legal Professional Network") with
+ * Student / Advocate / Client options and a common login toggle.
  */
 export default function LoginPage() {
   return (
     <section id="login" className="page">
-      <AuthPanel />
+      <RegistrationLanding />
     </section>
   );
 }

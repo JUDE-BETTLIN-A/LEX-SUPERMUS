@@ -62,6 +62,7 @@ LEX SUPERMUS follows a **microservices architecture** pattern, with each domain 
 | **client-service**       | 8083 | ✅ Active     | Consultations, case requests, advocate reviews           |
 | **legal-library-service**| 8084 | ✅ Skeleton   | Legal document repository, case law search, citations    |
 | **ai-service**           | 8085 | ✅ Skeleton   | Career AI, legal research AI (demo responses)            |
+| **auth-service**         | 8086 | ✅ Active     | Registration (student/advocate/client), login, JWT, BCrypt |
 
 ---
 
@@ -192,7 +193,8 @@ lex-supermus/
 │   │
 │   ├── legal-library-service/       # Legal corpus search service        (:8084)
 │   │
-│   └── ai-service/                  # Career AI / Legal AI service       (:8085)
+│   ├── ai-service/                  # Career AI / Legal AI service       (:8085)
+│   └── auth-service/                # Registration / login / JWT service (:8086)
 │
 ├── docs/                            # Project documentation
 │   ├── architecture.md

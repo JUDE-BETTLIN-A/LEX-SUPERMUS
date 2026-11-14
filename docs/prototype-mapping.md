@@ -73,5 +73,19 @@ Bar Council verification requirements:
 ## 6. Not done yet (later)
 
 - Docker / docker-compose / nginx (deferred by decision)
-- JWT security wiring (controllers take explicit IDs for now)
 - Real LLM provider + corpus ingestion behind `ai-service` / `legal-library-service`
+
+## 7. JUDE-BETTLIN branch — auth flow mapping (not in the prototype)
+
+The original prototype has no registration pages; the auth flow was designed
+from the master spec (`docs/master-development-spec.md`):
+
+| Feature | File |
+|---|---|
+| Registration landing ("Join India's Legal Professional Network") + login toggle | `frontend/src/components/auth/RegistrationLanding.tsx` → `/login` |
+| Common login (email + password, server-decided redirect) | `frontend/src/components/auth/LoginForm.tsx` |
+| Student multi-step form (personal → academic → consent) | `frontend/src/components/auth/StudentRegistrationForm.tsx` → `/register/student` |
+| Advocate multi-step form (personal → professional/bar council → consent) | `frontend/src/components/auth/AdvocateRegistrationForm.tsx` → `/register/advocate` |
+| Client minimal form (email + password) | `frontend/src/components/auth/ClientRegistrationForm.tsx` → `/register/client` |
+| Auth API client (auth-service on :8086, honest offline fallback) | `frontend/src/lib/authApi.ts` |
+| Backend: users/student_profiles/advocate_profiles migrations, JWT, BCrypt | `services/auth-service/` (V1__create_users.sql) |
