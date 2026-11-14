@@ -6,8 +6,11 @@ import { NAV_ITEMS } from "@/lib/navigation";
 
 /**
  * Site header — ported from the prototype's `<header>` + `<nav id="topnav">`.
- * The `go(page)` function is replaced by Next.js routing; the active state
- * comes from the current pathname instead of `data-page` toggling.
+ *
+ * Student / Advocate / Client nav entries are removed.
+ * A single 🔐 Login button routes to /login where the user authenticates
+ * and then picks their domain (Student | Advocate | Client).
+ * Home, Legal Library, and AI Solutions remain as public links.
  */
 export default function SiteHeader() {
   const pathname = usePathname();
@@ -15,16 +18,20 @@ export default function SiteHeader() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
+  const isLoginActive = pathname.startsWith("/login");
+
   return (
     <header>
       <Link href="/" className="brand" style={{ textDecoration: "none" }}>
-        <span className="mark">⚙</span>
+        <span className="mark">⚖</span>
         <div>
           <b>LEX SUPERMUS</b>
           <small>WHERE LAW MEETS INTELLIGENCE</small>
         </div>
       </Link>
+
       <nav id="topnav">
+        {/* Public nav links — Home · Legal Library · AI Solutions */}
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.page}
@@ -35,6 +42,17 @@ export default function SiteHeader() {
             {item.label}
           </Link>
         ))}
+
+        {/* Single unified Login entry — replaces Student / Advocate / Client */}
+        <Link
+          href="/login"
+          className={`navbtn nav-login-btn${isLoginActive ? " nav-login-btn--active" : ""}`}
+          data-page="login"
+          title="Sign in or register as Student, Advocate, or Client"
+        >
+          <span className="nav-login-icon" aria-hidden="true">🔐</span>
+          <span className="nav-login-label">Login</span>
+        </Link>
       </nav>
     </header>
   );

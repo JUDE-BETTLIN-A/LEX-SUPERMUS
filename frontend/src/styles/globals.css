@@ -1,4 +1,4 @@
-﻿/* LEX SUPERMUS - global styles ported from the interactive walkthrough prototype */
+/* LEX SUPERMUS - global styles ported from the interactive walkthrough prototype */
 :root{--navy:#14243a;--navy2:#0b192c;--gold:#c2a66b;--ivory:#f5f3ee;--ink:#18263a;--muted:#647084;--line:#e6e0d5;--white:#fff}
 *{box-sizing:border-box}body{margin:0;background:var(--ivory);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
 header{height:76px;background:linear-gradient(100deg,var(--navy2),var(--navy));color:white;display:flex;align-items:center;justify-content:space-between;padding:0 4%;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:5}
@@ -21,12 +21,261 @@ a.navbtn,a.goldbtn,a.outlinebtn,a.brand,a.card,a.link{text-decoration:none;color
 a.goldbtn,a.outlinebtn{display:inline-block}
 a.card{display:block}
 
-/* --- SANJAY branch: /login auth page --- */
+/* --- SANJAY branch: /login auth page (legacy stubs kept for compatibility) --- */
 .authtab{background:#eef1f6;color:var(--ink);border-radius:9px;padding:10px 18px;font-weight:700}
 .authtab.active{background:var(--navy);color:#fff}
 
-/* --- SANJAY branch: Login Register highlighted nav entry --- */
-.navbtn.authnav{background:linear-gradient(120deg,#d7b879,#f0d49c);color:#1b2431;font-weight:700;border-radius:20px}
+/* ================================================================
+   Nav Login button  — single icon replacing Student/Advocate/Client
+   ================================================================ */
+.nav-login-btn{
+  display:flex;align-items:center;gap:5px;
+  border-radius:20px;
+  background:linear-gradient(120deg,#d7b879,#f0d49c);
+  color:#1b2431 !important;
+  font-weight:700;
+  padding:9px 16px;
+  transition:box-shadow .18s,transform .12s;
+}
+.nav-login-btn:hover{box-shadow:0 4px 14px #c2a66b55;transform:translateY(-1px)}
+.nav-login-btn--active{
+  background:linear-gradient(120deg,#c2a66b,#d4a84b) !important;
+  box-shadow:0 2px 10px #c2a66b66;
+}
+.nav-login-icon{font-size:15px;line-height:1}
+.nav-login-label{font-size:13px}
+
+/* ================================================================
+   Unified Auth Panel  (/login)   — 2-step  Credentials → Domain
+   ================================================================ */
+
+/* Full-page centred layout */
+.auth-page{
+  min-height:calc(100vh - 76px - 80px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:32px 16px 48px;
+  background:linear-gradient(160deg,var(--ivory) 60%,#dfe8f3 100%);
+}
+
+/* ── Branding strip above the card ── */
+.auth-brand{
+  display:flex;align-items:center;gap:14px;margin-bottom:20px;
+}
+.auth-brand-mark{
+  font-size:40px;color:var(--gold);filter:drop-shadow(0 2px 6px #c2a66b55);
+}
+.auth-brand strong{
+  display:block;font-family:Georgia,serif;font-size:22px;letter-spacing:1.5px;color:var(--navy);
+}
+.auth-brand small{
+  display:block;font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:2px;
+}
+
+/* ── Step indicator ── */
+.auth-steps{
+  display:flex;align-items:center;gap:0;
+  margin-bottom:22px;
+}
+.auth-step-dot{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font:700 13px/1 inherit;
+  background:#e0e4ea;color:var(--muted);
+  flex:none;
+  transition:background .25s,color .25s;
+}
+.auth-step-dot--active{background:var(--navy);color:#fff}
+.auth-step-dot--done{background:#2c9a66;color:#fff}
+.auth-step-line{
+  width:36px;height:3px;background:#e0e4ea;
+  transition:background .25s;
+}
+.auth-step-line--done{background:#2c9a66}
+.auth-step-label{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+
+/* ── Card (Step 1) ── */
+.auth-card{
+  width:100%;max-width:460px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 12px 48px #14243a18;
+  overflow:hidden;
+}
+
+/* ── Mode toggle (Sign In / Create Account) ── */
+.auth-mode-row{
+  display:flex;gap:0;
+  margin:20px 24px 0;
+  background:#eef1f6;
+  border-radius:30px;
+  padding:4px;
+}
+.auth-mode-btn{
+  flex:1;
+  padding:9px 0;
+  border:0;border-radius:26px;
+  background:transparent;
+  font:inherit;font-size:13px;font-weight:600;
+  color:var(--muted);
+  cursor:pointer;
+  transition:background .18s,color .18s,box-shadow .18s;
+}
+.auth-mode-btn--active{
+  background:#fff;
+  color:var(--navy);
+  box-shadow:0 2px 8px #14243a1a;
+}
+
+/* ── Heading block ── */
+.auth-heading{padding:18px 24px 0}
+.auth-heading h2{font:bold 22px Georgia,serif;color:var(--navy);margin:0 0 4px}
+.auth-sub{font-size:13px;color:var(--muted);margin:0}
+
+/* ── Credentials form ── */
+.auth-form{
+  padding:14px 24px 18px;
+  display:flex;flex-direction:column;
+}
+.auth-form label{
+  font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.4px;
+  margin-top:10px;margin-bottom:0;display:block;
+}
+.auth-form input,
+.auth-form select{
+  width:100%;padding:11px 13px;
+  border:1px solid #d9dce2;border-radius:9px;
+  font:inherit;font-size:14px;margin:5px 0 0;
+  transition:border-color .18s,box-shadow .18s;background:#fff;
+}
+.auth-form input:focus,
+.auth-form select:focus{
+  outline:none;border-color:var(--gold);
+  box-shadow:0 0 0 3px #c2a66b25;
+}
+
+/* Error banner */
+.auth-error{
+  background:#fff0f0;border:1px solid #f5c6cb;color:#c0392b;
+  border-radius:9px;padding:10px 14px;font-size:13px;margin-top:12px;
+}
+
+/* Forgot password */
+.auth-forgot{text-align:right;margin-top:4px}
+
+/* Generic link-style button */
+.auth-link-btn{
+  background:transparent;border:0;
+  color:#9b7739;font:inherit;font-weight:700;font-size:13px;
+  cursor:pointer;padding:0;text-decoration:underline;
+}
+.auth-link-btn:hover{color:var(--navy)}
+
+/* Submit button */
+.auth-submit{
+  width:100%;margin-top:18px;padding:13px;
+  border:0;border-radius:30px;color:#fff;
+  font:700 15px/1 inherit;letter-spacing:.4px;cursor:pointer;
+  transition:opacity .18s,transform .12s;
+  box-shadow:0 4px 16px #14243a22;
+}
+.auth-submit--navy{background:linear-gradient(120deg,#14243a,#2a4165)}
+.auth-submit:hover:not(:disabled){opacity:.88;transform:translateY(-1px)}
+.auth-submit:active:not(:disabled){transform:translateY(0)}
+.auth-submit:disabled{opacity:.6;cursor:not-allowed}
+
+/* Disclaimer */
+.auth-disclaimer{text-align:center;font-size:11px;color:var(--muted);margin:10px 0 0}
+
+/* Footer switch */
+.auth-switch{
+  text-align:center;font-size:13px;color:var(--muted);
+  padding:14px 24px 20px;border-top:1px solid var(--line);
+}
+
+/* ═══════════════════════════════════════
+   Step 2 — Domain chooser
+   ═══════════════════════════════════════ */
+.auth-domain-wrap{
+  width:100%;max-width:800px;
+}
+.auth-domain-wrap .auth-heading{padding:0 0 0;margin-bottom:0}
+
+.auth-domain-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+/* Each domain card is a full <button> */
+.auth-domain-card{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:28px 20px 22px;
+  background:var(--domain-bg, #f5f7fa);
+  border:2px solid transparent;
+  border-radius:18px;
+  cursor:pointer;
+  transition:border-color .2s,transform .18s,box-shadow .2s;
+  text-align:center;
+  font:inherit;
+}
+.auth-domain-card:hover:not(:disabled){
+  border-color:var(--domain-accent,var(--gold));
+  transform:translateY(-4px);
+  box-shadow:0 10px 32px #14243a14;
+}
+.auth-domain-card--loading{
+  opacity:.7;cursor:wait;
+}
+.auth-domain-card:disabled:not(.auth-domain-card--loading){
+  opacity:.5;cursor:not-allowed;
+}
+.auth-domain-icon{font-size:46px;line-height:1;margin-bottom:4px}
+.auth-domain-label{
+  font:700 18px Georgia,serif;color:var(--navy);
+}
+.auth-domain-tagline{
+  font-size:12px;color:var(--muted);
+}
+/* Register: extra field names shown as small pills */
+.auth-domain-fields{
+  list-style:none;padding:0;margin:8px 0 0;
+  display:flex;flex-direction:column;gap:4px;width:100%;
+}
+.auth-domain-fields li{
+  font-size:11px;font-weight:600;color:var(--muted);
+  background:#fff;border:1px solid var(--line);
+  border-radius:6px;padding:4px 8px;
+  text-align:left;
+}
+.auth-domain-cta{
+  margin-top:12px;
+  display:inline-block;
+  background:var(--domain-accent,var(--navy));
+  color:#fff;
+  font:700 13px/1 inherit;
+  padding:9px 18px;
+  border-radius:20px;
+  transition:opacity .18s;
+}
+.auth-domain-card:hover:not(:disabled) .auth-domain-cta{opacity:.85}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  .auth-domain-grid{grid-template-columns:1fr}
+  .auth-domain-card{flex-direction:row;text-align:left;gap:14px;padding:18px}
+  .auth-domain-icon{font-size:34px;flex:none}
+  .auth-domain-cta{margin-top:0}
+}
+@media(max-width:520px){
+  .auth-card{border-radius:14px}
+  .auth-form,.auth-heading,.auth-switch{padding-left:16px;padding-right:16px}
+  .auth-mode-row{margin-left:16px;margin-right:16px}
+  .auth-step-label{display:none}
+}
 
 /* --- SANJAY branch: /feed community feed --- */
 .feedHead h1{font:bold 34px Georgia,serif;color:var(--navy);margin:0 0 8px}
