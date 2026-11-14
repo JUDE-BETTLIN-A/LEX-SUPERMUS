@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { NAV_ITEMS } from "@/lib/navigation";
 import ProfileAvatar from "@/components/ProfileAvatar";
 
@@ -16,13 +17,6 @@ type SignedInProfile = {
 
 /**
  * Site header — ported from the prototype's `<header>` + `<nav id="topnav">`.
-<<<<<<< Updated upstream
- * The `go(page)` function is replaced by Next.js routing; the active state
- * comes from the current pathname instead of `data-page` toggling.
- */
-export default function SiteHeader() {
-  const pathname = usePathname();
-=======
  *
  * The public navigation remains available. Signed-in users see their completed
  * profile avatar; clients use their separate portal.
@@ -58,13 +52,10 @@ export default function SiteHeader() {
       window.removeEventListener("storage", syncProfile);
     };
   }, []);
->>>>>>> Stashed changes
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-<<<<<<< Updated upstream
-=======
   const isLoginActive = pathname.startsWith("/login");
   const profileHref = profile.role === "CLIENT"
     ? "/client"
@@ -83,11 +74,10 @@ export default function SiteHeader() {
     router.push("/");
   }
 
->>>>>>> Stashed changes
   return (
     <header>
       <Link href="/" className="brand" style={{ textDecoration: "none" }}>
-        <span className="mark">⚙</span>
+        <span className="mark">⚖</span>
         <div>
           <b>LEX SUPERMUS</b>
           <small>WHERE LAW MEETS INTELLIGENCE</small>
@@ -104,8 +94,6 @@ export default function SiteHeader() {
             {item.label}
           </Link>
         ))}
-<<<<<<< Updated upstream
-=======
 
         {profile.name && profile.role ? (
           <>
@@ -137,7 +125,6 @@ export default function SiteHeader() {
             <span className="nav-login-label">Login</span>
           </Link>
         )}
->>>>>>> Stashed changes
       </nav>
     </header>
   );
