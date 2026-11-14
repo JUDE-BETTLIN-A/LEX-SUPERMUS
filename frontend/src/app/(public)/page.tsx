@@ -17,7 +17,7 @@ export default function HomePage() {
           </h1>
           <p>Your Legal Career. Your Legal Practice. Your Legal Knowledge.</p>
           <div className="actions">
-            <Link href="/student" className="goldbtn">
+            <Link href="/feed" className="goldbtn">
               Explore Platform →
             </Link>
             <Link href="/client" className="outlinebtn">
