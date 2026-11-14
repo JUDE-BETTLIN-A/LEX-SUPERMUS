@@ -7,14 +7,13 @@ export type NavItem = {
 
 /**
  * Top navigation — ported from the prototype's `<nav id="topnav">`.
- * `href` replaces the old `go(page)` JavaScript page switcher.
+ *
+ * Student / Advocate / Client / Admin are removed from the top bar.
+ * Users reach their portal by signing in via /login (the single Login button).
+ * Home, Legal Library, and AI Solutions remain public nav links.
  */
 export const NAV_ITEMS: NavItem[] = [
-  { page: "home", label: "Home", href: "/" },
-  { page: "student", label: "Student", href: "/student" },
-  { page: "advocate", label: "Advocate", href: "/advocate" },
-  { page: "client", label: "Client", href: "/client" },
+  { page: "home",    label: "Home",          href: "/"        },
   { page: "library", label: "Legal Library", href: "/library" },
-  { page: "ai", label: "AI Solutions", href: "/ai" },
-  { page: "admin", label: "Admin", href: "/admin" },
+  { page: "ai",      label: "AI Solutions",  href: "/ai"      },
 ];
