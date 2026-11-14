@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import StudentPortal from "@/components/portals/StudentPortal";
+import RoleAccessGate from "@/components/RoleAccessGate";
 
 export const metadata: Metadata = { title: "Student Portal | LEX SUPERMUS" };
 
@@ -7,7 +8,9 @@ export const metadata: Metadata = { title: "Student Portal | LEX SUPERMUS" };
 export default function StudentPage() {
   return (
     <section id="student" className="page">
-      <StudentPortal />
+      <RoleAccessGate role="STUDENT">
+        <StudentPortal />
+      </RoleAccessGate>
     </section>
   );
 }

@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import PortalShell from "@/components/PortalShell";
+import ProfessionalProfileDetails from "@/components/ProfessionalProfileDetails";
+import StudentAdditionalDetails from "@/components/StudentAdditionalDetails";
+import StudentResumeBuilder from "@/components/StudentResumeBuilder";
 
 const TABS = [
   { key: "overview", label: "▦ Dashboard" },
@@ -26,9 +29,9 @@ export default function StudentPortal() {
           <h1>Student Dashboard</h1>
           <p className="sub">Welcome back. Continue building your legal career.</p>
           <div className="item">
-            <b>Profile completion · 75%</b>
+            <b>Profile completion · 100%</b>
             <div className="progress">
-              <span />
+              <span style={{ width: "100%" }} />
             </div>
           </div>
           <div className="stats">
@@ -42,6 +45,8 @@ export default function StudentPortal() {
               Skills tracked<b>12</b>
             </div>
           </div>
+          <ProfessionalProfileDetails role="STUDENT" />
+          <StudentAdditionalDetails />
           <div className="rowcards">
             <div className="item">
               <h3>Quick access</h3>
@@ -56,22 +61,7 @@ export default function StudentPortal() {
       )}
 
       {tab === "resume" && (
-        <>
-          <h1>AI Resume Builder</h1>
-          <p className="sub">Create a structured legal-career resume.</p>
-          <label>Full name</label>
-          <input placeholder="Enter your name" />
-          <label>Education</label>
-          <input placeholder="Degree, institution and year" />
-          <label>Skills</label>
-          <input placeholder="Legal research, drafting, communication…" />
-          <button
-            className="primary"
-            onClick={() => demoAlert("Demo: resume preview would be generated here.")}
-          >
-            Generate resume preview
-          </button>
-        </>
+        <StudentResumeBuilder onGoToDashboard={() => setTab("overview")} />
       )}
 
       {tab === "jobs" && (

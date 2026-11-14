@@ -34,13 +34,16 @@ export default function PortalShell({
           <button
             key={tab.key}
             className={`sidebtn${tab.key === active ? " active" : ""}`}
+            aria-current={tab.key === active ? "page" : undefined}
             onClick={() => onChange(tab.key)}
           >
             {tab.label}
           </button>
         ))}
       </aside>
-      <div className="panel">{children}</div>
+      <div className="panel">
+        <div key={active} className="portal-screen">{children}</div>
+      </div>
     </div>
   );
 }

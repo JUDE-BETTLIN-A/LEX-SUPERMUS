@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AdvocatePortal from "@/components/portals/AdvocatePortal";
+import RoleAccessGate from "@/components/RoleAccessGate";
 
 export const metadata: Metadata = { title: "Advocate Portal | LEX SUPERMUS" };
 
@@ -7,7 +8,9 @@ export const metadata: Metadata = { title: "Advocate Portal | LEX SUPERMUS" };
 export default function AdvocatePage() {
   return (
     <section id="advocate" className="page">
-      <AdvocatePortal />
+      <RoleAccessGate role="ADVOCATE">
+        <AdvocatePortal />
+      </RoleAccessGate>
     </section>
   );
 }

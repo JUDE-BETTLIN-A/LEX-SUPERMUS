@@ -6,7 +6,7 @@ import "@/styles/globals.css";
 export const metadata: Metadata = {
   title: "LEX SUPERMUS | Where Law Meets Intelligence",
   description:
-    "Your Legal Career. Your Legal Practice. Your Legal Knowledge. — Indian legal technology ecosystem (demo).",
+    "Access legal support, knowledge, and AI-assisted tools through the LEX SUPERMUS client platform.",
 };
 
 export default function RootLayout({

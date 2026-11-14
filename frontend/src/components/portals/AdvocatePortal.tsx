@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PortalShell from "@/components/PortalShell";
+import ProfessionalProfileDetails from "@/components/ProfessionalProfileDetails";
+import AdvocateResumeBuilder from "@/components/AdvocateResumeBuilder";
 
 const TABS = [
   { key: "overview", label: "▦ Dashboard" },
   { key: "verification", label: "✓ Bar Council Verification" },
+  { key: "resume", label: "▤ Professional Resume" },
   { key: "matters", label: "▤ Matters & Documents" },
   { key: "appointments", label: "▣ Appointments" },
 ];
@@ -19,6 +22,13 @@ const TABS = [
  */
 export default function AdvocatePortal() {
   const [tab, setTab] = useState("overview");
+  const [verificationPending, setVerificationPending] = useState(false);
+
+  useEffect(() => {
+    setVerificationPending(
+      window.localStorage.getItem("lex-supermus-advocate-verification-status") === "PENDING_REVIEW_DEMO"
+    );
+  }, []);
 
   return (
     <PortalShell title="Advocate Portal" tabs={TABS} active={tab} onChange={setTab}>
@@ -32,7 +42,7 @@ export default function AdvocatePortal() {
           </div>
           <div className="stats">
             <div className="stat">
-              Profile status<b>In progress</b>
+              Profile status<b>{verificationPending ? "Review pending · demo" : "In progress"}</b>
             </div>
             <div className="stat">
               Open matters<b>03</b>
@@ -41,6 +51,7 @@ export default function AdvocatePortal() {
               Appointments<b>02</b>
             </div>
           </div>
+          <ProfessionalProfileDetails role="ADVOCATE" />
           <button className="primary" onClick={() => setTab("verification")}>
             Continue verification →
           </button>
@@ -85,10 +96,13 @@ export default function AdvocatePortal() {
             Submit for review
           </button>
           <div className="notice">
-            Status: Not submitted · No external verification performed.
+            Status: {verificationPending ? "Pending review · demo" : "Not submitted"} · No external
+            verification performed.
           </div>
         </>
       )}
+
+      {tab === "resume" && <AdvocateResumeBuilder />}
 
       {tab === "matters" && (
         <>
