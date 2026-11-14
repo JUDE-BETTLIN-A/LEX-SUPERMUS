@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import AuthPanel from "@/components/auth/AuthPanel";
 
 export const metadata: Metadata = {
-  title: "Login / Sign Up | LEX SUPERMUS",
+  title: "Professional Sign In / Create Account | LEX SUPERMUS",
 };
 
 /**
- * Replaces the old Admin nav entry: Student, Advocate and Client users
- * sign in or create an account here, then land in their own portal.
+ * Student and advocate sign-in and account creation.
  */
 export default function LoginPage() {
   return (
@@ -16,3 +15,4 @@ export default function LoginPage() {
     </section>
   );
 }
+
