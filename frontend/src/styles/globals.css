@@ -20,3 +20,89 @@ input,select,textarea{width:100%;padding:12px;border:1px solid #d9dce2;border-ra
 a.navbtn,a.goldbtn,a.outlinebtn,a.brand,a.card,a.link{text-decoration:none;color:inherit}
 a.goldbtn,a.outlinebtn{display:inline-block}
 a.card{display:block}
+
+/* --- SANJAY branch: /login auth page --- */
+.authtab{background:#eef1f6;color:var(--ink);border-radius:9px;padding:10px 18px;font-weight:700}
+.authtab.active{background:var(--navy);color:#fff}
+
+/* --- SANJAY branch: Login Register highlighted nav entry --- */
+.navbtn.authnav{background:linear-gradient(120deg,#d7b879,#f0d49c);color:#1b2431;font-weight:700;border-radius:20px}
+
+/* --- SANJAY branch: /feed community feed --- */
+.feedHead h1{font:bold 34px Georgia,serif;color:var(--navy);margin:0 0 8px}
+.feedGrid{display:grid;grid-template-columns:280px minmax(0,1fr) 300px;gap:16px;align-items:start}
+.sidecard{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:16px}
+.sidecard p{color:var(--muted);margin:8px 0 0}
+.sidecard b{color:var(--navy)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:#f0d49c;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-family:Georgia,serif;flex:none}
+.avatar.lg{width:64px;height:64px;font-size:22px}
+.composer{display:flex;gap:10px;align-items:flex-start}
+.composer textarea{flex:1;min-height:64px;margin:0;border-radius:24px;background:#f5f7fa;border:1px solid #d9dce2;resize:none}
+.postHead{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.postMeta{color:var(--muted);font-size:13px}
+.tagRow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.postActions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+.ghost{background:#f5f7fa;border-radius:20px;padding:8px 14px;color:var(--ink)}
+.trendRow{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);color:var(--ink)}
+.trendRow small{color:var(--muted);white-space:nowrap}
+@media(max-width:1100px){.feedGrid{grid-template-columns:1fr}}
+
+/* --- SANJAY branch: feed v2 (complete LinkedIn-style interface) --- */
+.liGrid{display:grid;grid-template-columns:280px minmax(0,1fr) 320px;gap:16px;align-items:start}
+.liCard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.liCover{height:54px;background:linear-gradient(120deg,var(--navy2),#33507a);border-radius:12px 12px 0 0;margin:-16px -16px 10px}
+.liAvatar{width:56px;height:56px;border-radius:50%;background:var(--navy);color:#f0d49c;display:flex;align-items:center;justify-content:center;font:700 18px Georgia,serif;border:2px solid #fff;position:relative}
+.liRow{display:flex;gap:12px;align-items:center}
+.liMuted{color:var(--muted);font-size:13px}
+.liDivider{height:1px;background:var(--line);margin:10px 0}
+.liUtil{display:flex;gap:8px;align-items:center;padding:7px 0}
+.liLink{background:transparent;color:#9b7739;font-weight:700;padding:4px 6px}
+.liIconNav{display:flex;justify-content:space-around;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 8px;margin-bottom:16px;flex-wrap:wrap}
+.liIconNav button{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:transparent;font-size:12px;padding:6px 10px}
+.liIconNav button.active{color:var(--navy);font-weight:700;border-bottom:2px solid var(--navy)}
+.liBadge{position:relative;display:inline-block;font-size:18px}
+.liBadge b{position:absolute;top:-8px;right:-10px;background:#c0392b;color:#fff;font-size:10px;border-radius:10px;padding:1px 5px}
+.liSort{display:flex;justify-content:flex-end;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:10px}
+.liSort select{width:auto;padding:6px 10px;margin:0}
+.liActions{display:flex;gap:10px;padding:10px 0 0;color:var(--muted);flex-wrap:wrap}
+.liMedia{height:150px;border-radius:10px;background:linear-gradient(120deg,#0b192c,#33507a);color:#f0d49c;display:flex;align-items:center;justify-content:center;text-align:center;font-family:Georgia,serif;margin:12px 0}
+.liMore{color:#9b7739;font-weight:700;background:transparent;padding:0 4px}
+.liNewsItem{padding:9px 0;border-bottom:1px solid var(--line)}
+.liNewsItem small{color:var(--muted);display:block}
+.liNewsItem b{font-size:14px}
+.liPuzzle{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.liPuzzle .ico{width:38px;height:38px;border-radius:8px;background:#f2e7ce;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.liFooter a{color:#9b7739;font-weight:600;padding:4px 8px;display:inline-block;cursor:pointer}
+@media(max-width:1100px){.liGrid{grid-template-columns:1fr}}
+
+/* --- SANJAY branch: LinkedIn UI color theme (scoped to /feed) --- */
+.liTheme{background:#f4f2ee}
+.liTheme .liCard{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.liTheme .liCard b{color:#000000e6}
+.liTheme .liCover{background:linear-gradient(120deg,#004182,#0a66c2)}
+.liTheme .avatar,.liTheme .liAvatar{background:#0a66c2;color:#fff;border-color:#fff}
+.liTheme .liIconNav{border:1px solid rgba(0,0,0,.08);border-radius:8px;background:#fff}
+.liTheme .liIconNav button{color:#00000099}
+.liTheme .liIconNav button.active{color:#0a66c2;border-bottom:2px solid #0a66c2;font-weight:700}
+.liTheme .liBadge b{background:#cb112d}
+.liTheme .liLink{color:#0a66c2}
+.liTheme .liLink:hover{text-decoration:underline}
+.liTheme .liMore{color:#0a66c2;font-weight:600}
+.liTheme .liSort{color:#00000099}
+.liTheme .liSort select{background:#fff;border-color:#d0d5d9}
+.liTheme .pill{background:#e8f3fb;color:#0a66c2}
+.liTheme .notice{background:#eef3f8;border-left:4px solid #0a66c2;color:#0a66c2}
+.liTheme .liMedia{background:linear-gradient(120deg,#004182,#0a66c2);color:#fff}
+.liTheme .ghost{background:transparent;color:#00000099;font-weight:600}
+.liTheme .ghost:hover{background:#f4f2ee;border-radius:16px}
+.liTheme .primary{background:#0a66c2;color:#fff;border-radius:18px}
+.liTheme .primary:hover{background:#004182}
+.liTheme .goldbtn{background:#0a66c2;color:#fff}
+.liTheme .goldbtn:hover{background:#004182}
+.liTheme .composer{border-color:#d0d5d9 !important;background:#fff}
+.liTheme .composer input{color:#00000099}
+.liTheme .liMuted,.liTheme .postMeta{color:#00000099}
+.liTheme h1,.liTheme h3{color:#000000e6}
+.liTheme .liNewsItem b{color:#000000e6}
+.liTheme .liFooter a{color:#00000099;font-weight:600}
+.liTheme .liFooter b{color:#0a66c2}
