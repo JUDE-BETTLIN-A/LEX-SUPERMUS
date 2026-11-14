@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_ITEMS } from "@/lib/navigation";
 
@@ -9,12 +9,12 @@ import { NAV_ITEMS } from "@/lib/navigation";
  * Site header — ported from the prototype's `<header>` + `<nav id="topnav">`.
  *
  * Student / Advocate / Client nav entries are removed.
- * A single 🔐 Login button routes to /login where the user authenticates
- * and then picks their domain (Student | Advocate | Client).
+ * Signed-out users see Login; authenticated users see Logout.
  * Home, Legal Library, and AI Solutions remain as public links.
  */
 export default function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
@@ -30,6 +30,12 @@ export default function SiteHeader() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   const isLoginActive = pathname.startsWith("/login");
+
+  function handleLogout() {
+    window.localStorage.removeItem("lex-supermus-user-name");
+    window.dispatchEvent(new Event("lex-auth-updated"));
+    router.push("/");
+  }
 
   return (
     <header>
@@ -56,16 +62,21 @@ export default function SiteHeader() {
 
         {userName && <span className="nav-user-greeting">Welcome, {userName}</span>}
 
-        {/* Single unified Login entry — replaces Student / Advocate / Client */}
-        <Link
-          href="/login"
-          className={`navbtn nav-login-btn${isLoginActive ? " nav-login-btn--active" : ""}`}
-          data-page="login"
-          title="Sign in or register as Student, Advocate, or Client"
-        >
-          <span className="nav-login-icon" aria-hidden="true">🔐</span>
-          <span className="nav-login-label">Login</span>
-        </Link>
+        {userName ? (
+          <button type="button" className="navbtn nav-login-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            className={`navbtn nav-login-btn${isLoginActive ? " nav-login-btn--active" : ""}`}
+            data-page="login"
+            title="Sign in or register"
+          >
+            <span className="nav-login-icon" aria-hidden="true">🔐</span>
+            <span className="nav-login-label">Login</span>
+          </Link>
+        )}
       </nav>
     </header>
   );

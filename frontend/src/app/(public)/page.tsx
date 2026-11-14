@@ -1,10 +1,29 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 /**
  * Landing page — ported from the prototype's `<section id="home">`.
  * `go(page)` calls become Next.js `<Link>` navigation.
  */
 export default function HomePage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const syncAuthentication = () => {
+      setIsAuthenticated(Boolean(window.localStorage.getItem("lex-supermus-user-name")));
+    };
+
+    syncAuthentication();
+    window.addEventListener("lex-auth-updated", syncAuthentication);
+    window.addEventListener("storage", syncAuthentication);
+    return () => {
+      window.removeEventListener("lex-auth-updated", syncAuthentication);
+      window.removeEventListener("storage", syncAuthentication);
+    };
+  }, []);
+
   return (
     <section id="home" className="page">
       <div className="hero">
@@ -17,12 +36,16 @@ export default function HomePage() {
           </h1>
           <p>Your Legal Career. Your Legal Practice. Your Legal Knowledge.</p>
           <div className="actions">
-            <Link href="/feed" className="goldbtn">
-              Explore Platform →
-            </Link>
-            <Link href="/client" className="outlinebtn">
-              Get Started
-            </Link>
+            {isAuthenticated && (
+              <Link href="/feed" className="goldbtn">
+                Explore Platform →
+              </Link>
+            )}
+            {!isAuthenticated && (
+              <Link href="/login" className="outlinebtn">
+                Get Started
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -30,18 +53,6 @@ export default function HomePage() {
       <h2 className="sectionTitle">OUR ECOSYSTEM</h2>
 
       <div className="cards">
-        <Link href="/student" className="card portal">
-          <div className="ico">🎓</div>
-          <h3>Students</h3>
-          <p>Build your legal career</p>
-          <span className="link">Explore opportunities →</span>
-        </Link>
-        <Link href="/advocate" className="card portal">
-          <div className="ico">⚙️</div>
-          <h3>Advocates</h3>
-          <p>Verify. Practise. Grow.</p>
-          <span className="link">Professional tools →</span>
-        </Link>
         <Link href="/client" className="card portal">
           <div className="ico">👥</div>
           <h3>Clients</h3>
@@ -64,16 +75,6 @@ export default function HomePage() {
             <p>Ask. Learn. Research. Advance.</p>
             <Link href="/ai" className="goldbtn">
               Try AI →
-            </Link>
-          </div>
-        </div>
-        <div className="card feature">
-          <div className="ico">🛡️</div>
-          <div>
-            <h3>Advocate Verification</h3>
-            <p>Structured enrolment review workflow.</p>
-            <Link href="/advocate" className="outlinebtn">
-              View workflow →
             </Link>
           </div>
         </div>
